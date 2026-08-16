@@ -1,0 +1,40 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ECRAuth",
+      "Effect": "Allow",
+      "Action": "ecr:GetAuthorizationToken",
+      "Resource": "*"
+    },
+    {
+      "Sid": "ECRPushPull",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:PutImage",
+        "ecr:InitiateLayerUpload",
+        "ecr:UploadLayerPart",
+        "ecr:CompleteLayerUpload",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+      ],
+      "Resource": [
+        "arn:aws:ecr:us-east-2:067712565894:repository/techchallenge1-frontend",
+        "arn:aws:ecr:us-east-2:067712565894:repository/techchallenge1-backend"
+      ]
+    },
+    {
+      "Sid": "ECSDeploy",
+      "Effect": "Allow",
+      "Action": [
+        "ecs:UpdateService",
+        "ecs:DescribeServices"
+      ],
+      "Resource": [
+        "arn:aws:ecs:us-east-2:067712565894:service/techchallenge1-cluster/techchallenge1-frontend-service",
+        "arn:aws:ecs:us-east-2:067712565894:service/techchallenge1-cluster/techchallenge1-backend-service"
+      ]
+    }
+  ]
+}
