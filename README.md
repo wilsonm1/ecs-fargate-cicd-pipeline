@@ -1,4 +1,4 @@
-# Tech Challenge 1 - ECS Deployment
+# AWS ECS Fargate Deployment Pipeline
 
 Dockerized React frontend and Express backend deployed to AWS ECS Fargate, provisioned with Terraform, and deployed through two independent CI/CD pipelines: Jenkins (main branch) and GitHub Actions (gitops branch).
 
@@ -25,7 +25,7 @@ All of the above (cluster, services, task definitions, ALBs, security groups, au
 
 ## CI/CD Pipelines
 
-This repository has two independent, equivalent CI/CD pipelines, kept deliberately on separate branches per the challenge requirements:
+This repository has two independent, equivalent CI/CD pipelines, kept deliberately on separate branches to compare a self-hosted approach against a fully managed one:
 
 ### Jenkins (main branch)
 
@@ -36,7 +36,7 @@ A `Jenkinsfile` at the repo root defines a four-stage pipeline:
 3. **Push to ECR** - authenticates to Amazon ECR and pushes both images tagged `:latest`.
 4. **Deploy to ECS** - forces a new deployment on both ECS services, which pulls the freshly pushed images.
 
-The Jenkins server itself is not provisioned by Terraform (as permitted by the challenge rules) - see the "Jenkins Server Infrastructure" section below for how it was set up manually.
+The Jenkins server itself is intentionally provisioned outside of Terraform, keeping the CI/CD tooling decoupled from the application infrastructure it deploys - see the "Jenkins Server Infrastructure" section below for how it was set up manually.
 
 ### GitHub Actions (gitops branch)
 
@@ -52,13 +52,13 @@ This workflow triggers automatically on every push to the `gitops` branch.
 
 ## Jenkins Server Infrastructure
 
-As permitted by the challenge rules, the Jenkins server and its supporting infrastructure were provisioned manually rather than through Terraform. This section documents what was set up.
+The Jenkins server and its supporting infrastructure were provisioned manually rather than through Terraform. This section documents what was set up.
 
 - **Compute:** A single EC2 instance (Ubuntu, t3.small) named `techchallenge1-jenkins`, running in `us-east-2`.
 - **Jenkins itself:** Runs as a Docker container (`jenkins/jenkins:lts`) on the EC2 host, with its configuration and job data persisted in a named Docker volume (`jenkins_home`) so it survives container restarts.
 - **Docker access:** The Jenkins container has the Docker CLI installed and the host's Docker socket (`/var/run/docker.sock`) mounted into it, so pipeline stages can build and push images using the host's Docker engine. The `jenkins` user inside the container was added to a `docker` group whose GID matches the host's socket ownership, so it can use the socket without running as root.
 - **AWS CLI:** AWS CLI v2 is installed directly inside the Jenkins container so pipeline stages can authenticate to ECR and call the ECS API.
-- **Security group:** Allows inbound SSH (port 22) and the Jenkins web UI (port 8080) from the internet, so the server is publicly reachable for both administration and the evaluation.
+- **Security group:** Allows inbound SSH (port 22) and the Jenkins web UI (port 8080) from the internet, so the server is publicly reachable for both administration and pipeline access.
 - **Credentials:** AWS credentials used by the pipeline (a dedicated, least-privilege IAM user scoped to ECR push/pull and ECS service updates) and a GitHub Personal Access Token (for cloning this private repository) are stored in Jenkins' built-in encrypted credential store, referenced by ID from the Jenkinsfile - never hardcoded in the repository.
 
 ## Repository Structure
