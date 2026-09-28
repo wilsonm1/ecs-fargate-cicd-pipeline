@@ -2,11 +2,9 @@
 
 Dockerized React frontend and Express backend deployed to AWS ECS Fargate, provisioned with Terraform, and deployed through two independent CI/CD pipelines: Jenkins (main branch) and GitHub Actions (gitops branch).
 
-## Live URLs
+## Deployment status
 
-- **Frontend (public):** http://techchallenge1-alb-1549756790.us-east-2.elb.amazonaws.com
-- **Backend (public):** http://techchallenge1-backend-alb-639916556.us-east-2.elb.amazonaws.com:8080
-- **Jenkins server:** http://18.219.238.184:8080
+The AWS environment has been torn down to avoid ongoing cost, so there are no live URLs. Everything is defined in Terraform and can be redeployed with `terraform apply`.
 
 When the frontend successfully connects to the backend, it displays a GUID returned by the backend API.
 

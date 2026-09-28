@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 resource "aws_ecs_task_definition" "backend" {
   family                   = "techchallenge1-backend"
   requires_compatibilities = ["FARGATE"]
@@ -9,7 +11,7 @@ resource "aws_ecs_task_definition" "backend" {
   container_definitions = jsonencode([
     {
       name      = "backend"
-      image     = "067712565894.dkr.ecr.us-east-2.amazonaws.com/techchallenge1-backend:latest"
+      image     = "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-2.amazonaws.com/techchallenge1-backend:latest"
       essential = true
       portMappings = [
         {
@@ -44,7 +46,7 @@ resource "aws_ecs_task_definition" "frontend" {
   container_definitions = jsonencode([
     {
       name      = "frontend"
-      image     = "067712565894.dkr.ecr.us-east-2.amazonaws.com/techchallenge1-frontend:latest"
+      image     = "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-2.amazonaws.com/techchallenge1-frontend:latest"
       essential = true
       portMappings = [
         {
